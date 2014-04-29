@@ -13,6 +13,12 @@
            * @type {String}
            */
           appId: '',
+          
+          /**
+           * Your Facebook App Secret
+           * @type {String}
+           */
+          appSecret: '',
 
           /**
            * Redirect URL for "inside" script
@@ -201,6 +207,53 @@
               userDenied = false;
             });
         },
+        
+        getNewAccessToken: function(code, afterCallback) {
+           var get_url = "https://graph.facebook.com/oauth/access_token?";
+                get_url += "code=" + code;
+        	get_url += "&client_id=" + this.settings.appId;
+                get_url += "&redirect_uri=" + this.settings.redirectUrl;
+                    
+            FacebookInAppBrowser.ajax('GET', get_url, function(data) {
+            	if(data) {
+                   var response = JSON.parse(data);
+	           console.log("[FacebookInAppBrowser] Facebook responded with: " + JSON.stringify(response));
+	              
+	           window.localStorage.setItem('accessToken', response.access_token);  
+	        } else {
+	           if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+	              setTimeout(function() {
+	                 afterCallback(false);
+	              }, 0);
+	           }
+	        }
+	    });	
+        },
+        
+        requestNewAccessToken: function(afterCallback) {
+            var get_url = "https://graph.facebook.com/oauth/client_code?";
+                get_url += "access_token=" + window.localStorage.getItem('accessToken');
+        	get_url += "&client_secret=" + this.settings.appSecret;
+                get_url += "&redirect_uri=" + this.settings.redirectUrl;
+                
+            var that = this;
+                    
+            FacebookInAppBrowser.ajax('GET', get_url, function(data) {
+            	if(data) {
+                   var response = JSON.parse(data);
+	           console.log("[FacebookInAppBrowser] Facebook responded with code: " + response.code);
+	              
+	           that.getNewAcessToken(response.code, afterCallback);   
+	        } else {
+	           if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+	              setTimeout(function() {
+	                 afterCallback(false);
+	              }, 0);
+	           }
+	        }
+	    });
+        },
+        
 
         /**
          * Get User Info
