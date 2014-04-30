@@ -208,7 +208,12 @@
             });
         },
         
-        getNewAccessToken: function(code, afterCallback) {
+        _getNewAccessToken: function(code, afterCallback) {
+           if(!FacebookInAppBrowser.exists(code)) {
+              console.log('[FacebookInAppBrowser] The code parameter is necessary.');
+              return false;
+            }
+        	
            var get_url = "https://graph.facebook.com/oauth/access_token?";
                 get_url += "code=" + code;
         	get_url += "&client_id=" + this.settings.appId;
@@ -218,8 +223,16 @@
             	if(data) {
                    var response = JSON.parse(data);
 	           console.log("[FacebookInAppBrowser] Facebook responded with: " + JSON.stringify(response));
-	              
-	           window.localStorage.setItem('accessToken', response.access_token);  
+	           if(response.access_token) {
+	           	window.localStorage.setItem('accessToken', response.access_token);
+	           } else {
+	           	console.log("[FacebookInAppBrowser] No access token.");
+	           	if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+	        	   setTimeout(function() {
+	        	      afterCallback(false);
+	              	   }, 0);
+	           	}
+	           }
 	        } else {
 	           if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
 	              setTimeout(function() {
@@ -231,6 +244,12 @@
         },
         
         requestNewAccessToken: function(afterCallback) {
+            if(!FacebookInAppBrowser.exists(this.settings.appId) || !FacebookInAppBrowser.exists(this.settings.redirectUrl
+               || !FacebookInAppBrowser.exists(this.settings.appSecret || window.localStorage.getItem('accessToken') == null) {
+              console.log('[FacebookInAppBrowser] You need to set up your app id, app secret, redirect url and have an access token.');
+              return false;
+            }
+        
             var get_url = "https://graph.facebook.com/oauth/client_code?";
                 get_url += "access_token=" + window.localStorage.getItem('accessToken');
         	get_url += "&client_secret=" + this.settings.appSecret;
@@ -241,9 +260,17 @@
             FacebookInAppBrowser.ajax('GET', get_url, function(data) {
             	if(data) {
                    var response = JSON.parse(data);
-	           console.log("[FacebookInAppBrowser] Facebook responded with code: " + response.code);
-	              
-	           that.getNewAcessToken(response.code, afterCallback);   
+	           console.log("[FacebookInAppBrowser] Facebook responded with: " + JSON.stringify(response));
+	           if(response.code) {
+	           	that._getNewAcessToken(response.code, afterCallback); 
+	           } else {
+	           	console.log("[FacebookInAppBrowser] No code.");
+	           	if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+	        	   setTimeout(function() {
+	        	      afterCallback(false);
+	              	   }, 0);
+	           	}
+	           }
 	        } else {
 	           if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
 	              setTimeout(function() {
