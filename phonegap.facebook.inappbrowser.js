@@ -244,8 +244,8 @@
         },
         
         requestNewAccessToken: function(afterCallback) {
-            if(!FacebookInAppBrowser.exists(this.settings.appId) || !FacebookInAppBrowser.exists(this.settings.redirectUrl
-               || !FacebookInAppBrowser.exists(this.settings.appSecret || window.localStorage.getItem('accessToken') == null) {
+            if(!FacebookInAppBrowser.exists(this.settings.appId) || !FacebookInAppBrowser.exists(this.settings.redirectUrl)
+               || !FacebookInAppBrowser.exists(this.settings.appSecret) || window.localStorage.getItem('accessToken') == null) {
               console.log('[FacebookInAppBrowser] You need to set up your app id, app secret, redirect url and have an access token.');
               return false;
             }
