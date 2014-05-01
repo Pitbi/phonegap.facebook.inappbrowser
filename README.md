@@ -30,6 +30,7 @@ Basic example
 ```javascript
 // Settings
 FacebookInAppBrowser.settings.appId = '123456789';
+FacebookInAppBrowser.settings.appSecret = 'yourAppSecret';
 FacebookInAppBrowser.settings.redirectUrl = 'http://example.com';
 FacebookInAppBrowser.settings.permissions = 'email';
 
@@ -61,6 +62,16 @@ FacebookInAppBrowser.login({
 	}
 });
 
+// Renew access token
+FacebookInAppBrowser.requestNewAccessToken(function(response) {
+	if(response) {
+		// access token
+		// also stored with localStorage
+		console.log(response);
+	}
+});
+
+
 // Invite friends
 FacebookInAppBrowser.invite('Get to know my app!', function(response) {
 	if(response) {
@@ -71,12 +82,12 @@ FacebookInAppBrowser.invite('Get to know my app!', function(response) {
 // Same logic of callbacks
 FacebookInAppBrowser.getInfo(function(response) {
 	if(response) {
-		var name = response.name,
-            id = response.id,
-            gender = response.gender;
-	            
-        // check the response object to see all available data like email, first name, last name, etc
-        console.log(JSON.stringify(response));
+	    var name = response.name,
+                id = response.id,
+                gender = response.gender;
+	              
+           // check the response object to see all available data like email, first name, last name, etc
+           console.log(JSON.stringify(response));
 	}
 });
 
