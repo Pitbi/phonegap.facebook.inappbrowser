@@ -225,6 +225,11 @@
 	           console.log("[FacebookInAppBrowser] Facebook responded with: " + JSON.stringify(response));
 	           if(response.access_token) {
 	           	window.localStorage.setItem('accessToken', response.access_token);
+	           	if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+	        	   setTimeout(function() {
+	        	      afterCallback(response.access_token);
+	              	   }, 0);
+	           	}
 	           } else {
 	           	console.log("[FacebookInAppBrowser] No access token.");
 	           	if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
